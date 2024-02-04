@@ -124,6 +124,18 @@ router.post('/upload/listing/image', upload.array('images', 12), async (req, res
     }
     res.status(200).json(uploadedUrls);
 });
+router.delete('/listings/:id', async (req, res) => {
+    const ListingModel = mongoose_1.default.model("Listing", listing_1.ListingSchema);
+    const { id } = req.params;
+    try {
+        await ListingModel.findByIdAndDelete(id).exec();
+        res.status(200).json({ message: 'Listing deleted successfully' });
+    }
+    catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 exports.default = router;
 app.use((0, cors_1.default)());
 app.use('/', router);
