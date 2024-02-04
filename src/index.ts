@@ -2,8 +2,8 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-import { ContactInfoSchema } from './schemas/contactInfo';
-import { ListingSchema } from './schemas/listing';
+import { ContactInfoSchema } from '../schemas/contactInfo';
+import { ListingSchema } from '../schemas/listing';
 var multer = require('multer');
 var upload = multer();
 
@@ -104,6 +104,7 @@ const port = process.env.PORT || 8000;
 
 const uri = process.env.MONGO_URL;
 
+// @ts-ignore
 router.get('/', async (req, res) => {
   const user = {
     name: 'John',
@@ -192,6 +193,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 //form-urlencoded
 
+// @ts-ignore
 router.get('/contact-infos', async (req, res) => {
   const ContactInfo = mongoose.model("ContactInfo", ContactInfoSchema);
 
@@ -216,6 +218,7 @@ router.post('/listings', async (req, res) => {
 });
 
 // Get Listings
+// @ts-ignore
 router.get('/listings', async (req, res) => {
   const Listing = mongoose.model("Listing", ListingSchema);
 
