@@ -3,12 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const contactInfo_1 = require("./schemas/contactInfo");
+const listing_1 = require("./schemas/listing");
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const contactInfo_1 = require("../schemas/contactInfo");
-const listing_1 = require("../schemas/listing");
 var multer = require('multer');
 var upload = multer();
 const { Storage } = require('@google-cloud/storage');

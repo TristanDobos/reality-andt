@@ -1,9 +1,9 @@
+import { ContactInfoSchema } from './schemas/contactInfo';
+import { ListingSchema } from './schemas/listing';
 import cors from "cors";
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-import { ContactInfoSchema } from '../schemas/contactInfo';
-import { ListingSchema } from '../schemas/listing';
 var multer = require('multer');
 var upload = multer();
 
