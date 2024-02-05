@@ -42,7 +42,13 @@ exports.ListingSchema = new mongoose.Schema({
     },
     rooms: Number,
     bathrooms: Number,
-    area: Number,
+    floorArea: Number,
+    wholeArea: Number,
+    owner: {
+        name: String,
+        phone: String,
+        address: String
+    },
     photos: [String],
     listedDate: {
         type: Date,
