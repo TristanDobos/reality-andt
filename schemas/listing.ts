@@ -22,14 +22,14 @@ const PropertyType = {
 }
 
 export const ListingSchema = new mongoose.Schema({
-  title: { 
-    type: String, 
-    required: true 
+  title: {
+    type: String,
+    required: true
   },
   description: String,
-  price: { 
-    type: Number, 
-    required: true 
+  price: {
+    type: Number,
+    required: true
   },
   location: {
     city: String,
@@ -43,12 +43,18 @@ export const ListingSchema = new mongoose.Schema({
   },
   rooms: Number,
   bathrooms: Number,
-  area: Number,
+  floorArea: Number,
+  wholeArea: Number,
+  owner: {
+    name: String,
+    phone: String,
+    address: String
+  },
   // amenities: [String],
   photos: [String],
-  listedDate: { 
-    type: Date, 
-    default: Date.now 
+  listedDate: {
+    type: Date,
+    default: Date.now
   },
   contactInfo: {
     name: String,
