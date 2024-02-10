@@ -115,6 +115,7 @@ router.get('/', async (req, res) => {
 }
 );
 setTimeout(function () {
+  console.log("the uri is ", uri);
   mongoose.connect(uri ?? '').then((res) => {
     console.log("the res is ", res)
   })
@@ -222,7 +223,16 @@ router.post('/listings', async (req, res) => {
 router.get('/listings', async (req, res) => {
   const Listing = mongoose.model("Listing", ListingSchema);
 
-  const listings = await Listing.find({});
+  const listings = await Listing.find({}).select('-owner').exec();
+
+  res.json(listings);
+});
+
+// @ts-ignore
+router.get('/admin/listings', async (req, res) => {
+  const Listing = mongoose.model("Listing", ListingSchema);
+
+  const listings = await Listing.find({}).exec();
 
   res.json(listings);
 });
@@ -320,6 +330,22 @@ router.delete('/listings/:id', async (req: any, res: any) => {
   }
 }
 );
+
+// Get one listing
+router.get('/listings/:id', async (req: any, res: any) => {
+  const ListingModel = mongoose.model("Listing", ListingSchema);
+  const { id } = req.params;
+
+  try {
+    // Query the database for the listing
+    const listing = await ListingModel.findById(id).select('-owner').exec();
+
+    res.json(listing);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 export default router;
 
