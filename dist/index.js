@@ -42,6 +42,7 @@ router.get('/', async (req, res) => {
     res.json(user);
 });
 setTimeout(function () {
+    console.log("the uri is ", uri);
     mongoose_1.default.connect(uri !== null && uri !== void 0 ? uri : '').then((res) => {
         console.log("the res is ", res);
     });
@@ -49,8 +50,8 @@ setTimeout(function () {
 mongoose_1.default.connection.on('error', err => {
     console.error(err);
 });
-app.use(express_1.default.json({ limit: '50mb' }));
-app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
+app.use(express_1.default.json({ limit: '500mb' }));
+app.use(express_1.default.urlencoded({ limit: '500mb', extended: true }));
 router.get('/contact-infos', async (req, res) => {
     const ContactInfo = mongoose_1.default.model("ContactInfo", contactInfo_1.ContactInfoSchema);
     const contactInfos = await ContactInfo.find({});
@@ -69,7 +70,12 @@ router.post('/listings', async (req, res) => {
 });
 router.get('/listings', async (req, res) => {
     const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);
-    const listings = await Listing.find({});
+    const listings = await Listing.find({}).select('-owner').exec();
+    res.json(listings);
+});
+router.get('/admin/listings', async (req, res) => {
+    const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);
+    const listings = await Listing.find({}).exec();
     res.json(listings);
 });
 app.use(express_1.default.static('public'));
@@ -130,6 +136,18 @@ router.delete('/listings/:id', async (req, res) => {
     try {
         await ListingModel.findByIdAndDelete(id).exec();
         res.status(200).json({ message: 'Listing deleted successfully' });
+    }
+    catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+router.get('/listings/:id', async (req, res) => {
+    const ListingModel = mongoose_1.default.model("Listing", listing_1.ListingSchema);
+    const { id } = req.params;
+    try {
+        const listing = await ListingModel.findById(id).select('-owner').exec();
+        res.json(listing);
     }
     catch (error) {
         console.error('Error:', error);
