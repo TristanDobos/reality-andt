@@ -33,7 +33,6 @@ export const ListingSchema = new mongoose.Schema({
   },
   location: {
     city: String,
-    zipCode: String,
     address: String
   },
   propertyType: {
