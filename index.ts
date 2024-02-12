@@ -237,6 +237,15 @@ router.get('/admin/listings', async (req, res) => {
   res.json(listings);
 });
 
+// @ts-ignore
+router.get('/admin/listings1', async (req, res) => {
+  const Listing = mongoose.model("Listing", ListingSchema);
+
+  const listings = await Listing.find({}).exec();
+
+  res.json(listings);
+});
+
 app.use(express.static('public'));
 
 router.get('/properties', async (req: any, res: any) => {
