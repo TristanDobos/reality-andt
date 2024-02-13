@@ -1,5 +1,5 @@
 import { ContactInfoSchema } from './schemas/contactInfo';
-import { ListingSchema } from './schemas/listing';
+import { AvailabilityState, ListingSchema } from './schemas/listing';
 import cors from "cors";
 import dotenv from 'dotenv';
 import express from 'express';
@@ -223,7 +223,7 @@ router.post('/listings', async (req, res) => {
 router.get('/listings', async (req, res) => {
   const Listing = mongoose.model("Listing", ListingSchema);
 
-  const listings = await Listing.find({}).select('-owner').exec();
+  const listings = await Listing.find({ availability: AvailabilityState.AVAILABLE }).select('-owner').exec();
 
   res.json(listings);
 });

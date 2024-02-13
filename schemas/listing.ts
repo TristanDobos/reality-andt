@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 // Define enum for availability states
-const AvailabilityState = {
+export const AvailabilityState = {
   AVAILABLE: 'available',
   RESERVED: 'reserved',
   SOLD: 'sold',
   NOT_AVAILABLE: 'not_available'
 };
 
-const PropertyType = {
+export const PropertyType = {
   FAMILY_HOUSE: "family_house",
   COTTAGE: "cottage",
   COUNTRY_HOUSE: "country_house",

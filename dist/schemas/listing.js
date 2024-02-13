@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ListingSchema = void 0;
+exports.ListingSchema = exports.PropertyType = exports.AvailabilityState = void 0;
 const mongoose = require('mongoose');
-const AvailabilityState = {
+exports.AvailabilityState = {
     AVAILABLE: 'available',
     RESERVED: 'reserved',
     SOLD: 'sold',
     NOT_AVAILABLE: 'not_available'
 };
-const PropertyType = {
+exports.PropertyType = {
     FAMILY_HOUSE: "family_house",
     COTTAGE: "cottage",
     COUNTRY_HOUSE: "country_house",
@@ -36,7 +36,7 @@ exports.ListingSchema = new mongoose.Schema({
     },
     propertyType: {
         type: String,
-        enum: Object.values(PropertyType),
+        enum: Object.values(exports.PropertyType),
         required: true
     },
     rooms: Number,
@@ -60,8 +60,8 @@ exports.ListingSchema = new mongoose.Schema({
     },
     availability: {
         type: String,
-        enum: Object.values(AvailabilityState),
-        default: AvailabilityState.AVAILABLE
+        enum: Object.values(exports.AvailabilityState),
+        default: exports.AvailabilityState.AVAILABLE
     }
 });
 //# sourceMappingURL=listing.js.map
