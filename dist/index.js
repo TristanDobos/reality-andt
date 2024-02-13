@@ -71,6 +71,8 @@ router.post('/listings', async (req, res) => {
 router.get('/listings', async (req, res) => {
     const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);
     const listings = await Listing.find({ availability: listing_1.AvailabilityState.AVAILABLE }).select('-owner').exec();
+    console.log("the listings are ", listings);
+    console.log("it filters the listings ", listings.filter((listing) => listing.availability === listing_1.AvailabilityState.AVAILABLE));
     res.json(listings);
 });
 router.get('/admin/listings', async (req, res) => {

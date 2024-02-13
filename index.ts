@@ -224,6 +224,8 @@ router.get('/listings', async (req, res) => {
   const Listing = mongoose.model("Listing", ListingSchema);
 
   const listings = await Listing.find({ availability: AvailabilityState.AVAILABLE }).select('-owner').exec();
+  console.log("the listings are ", listings);
+  console.log("it filters the listings ", listings.filter((listing: any) => listing.availability === AvailabilityState.AVAILABLE));
 
   res.json(listings);
 });
