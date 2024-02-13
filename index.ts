@@ -230,6 +230,19 @@ router.get('/listings', async (req, res) => {
   res.json(listings);
 });
 
+// Update Listing
+router.put('/listings/:id', async (req, res) => {
+  const Listing = mongoose.model("Listing", ListingSchema);
+  const { id } = req.params;
+
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(id, req.body, { new: true }).exec();
+    res.json(updatedListing);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
+
 // @ts-ignore
 router.get('/admin/listings', async (req, res) => {
   const Listing = mongoose.model("Listing", ListingSchema);

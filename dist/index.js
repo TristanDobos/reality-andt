@@ -75,6 +75,17 @@ router.get('/listings', async (req, res) => {
     console.log("it filters the listings ", listings.filter((listing) => listing.availability === listing_1.AvailabilityState.AVAILABLE));
     res.json(listings);
 });
+router.put('/listings/:id', async (req, res) => {
+    const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);
+    const { id } = req.params;
+    try {
+        const updatedListing = await Listing.findByIdAndUpdate(id, req.body, { new: true }).exec();
+        res.json(updatedListing);
+    }
+    catch (err) {
+        res.status(400).json(err);
+    }
+});
 router.get('/admin/listings', async (req, res) => {
     const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);
     const listings = await Listing.find({}).exec();
