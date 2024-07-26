@@ -355,9 +355,16 @@ router.get('/listings/:id', async (req: any, res: any) => {
   }
 });
 
+router.get('/upload-picture',async (req, res) => {
+  res.status(200).send({
+    'message': "This work"
+  })
+  
+})
 
 router.post('/upload-picture', upload.single('image'), async (req: any, res) => {
   try {
+    console.log("Uploading a picture");
     const { buffer } = req.file;
     const da = Date.now();
 
