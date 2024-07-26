@@ -5,8 +5,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-
-const sharp = require('sharp');
+import sharp from 'sharp';
 
 var multer = require('multer');
 var upload = multer({ storage: multer.memoryStorage() });

@@ -9,7 +9,7 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const sharp = require('sharp');
+const sharp_1 = __importDefault(require("sharp"));
 var multer = require('multer');
 var upload = multer({ storage: multer.memoryStorage() });
 const { Storage } = require('@google-cloud/storage');
@@ -58,7 +58,7 @@ router.post('/uploadpicture', upload.single('image'), async (req, res) => {
         const bucket = storage.bucket(bucketName);
         const hdFile = bucket.file(hdFileName);
         await hdFile.save(buffer);
-        const thumbnailBuffer = await sharp(buffer)
+        const thumbnailBuffer = await (0, sharp_1.default)(buffer)
             .resize({ width: 150 })
             .toBuffer();
         const thumbnailFile = bucket.file(thumbnailFileName);
