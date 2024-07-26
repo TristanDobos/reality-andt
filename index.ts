@@ -279,11 +279,11 @@ router.put('/listings/:id', async (req, res) => {
 
 // @ts-ignore
 router.get('/admin/listings', async (req, res) => {
-  // const Listing = mongoose.model("Listing", ListingSchema);
+  const Listing = mongoose.model("Listing", ListingSchema);
 
-  // const listings = await Listing.find({}).exec();
+  const listings = await Listing.find({}).exec();
 
-  res.json({asdsa: "hello"});
+  res.json(listings);
 });
 
 
