@@ -356,7 +356,7 @@ router.get('/listings/:id', async (req: any, res: any) => {
 });
 
 
-app.post('/upload-picture', upload.single('image'), async (req: any, res) => {
+router.post('/upload-picture', upload.single('image'), async (req: any, res) => {
   try {
     const { buffer } = req.file;
     const da = Date.now();
