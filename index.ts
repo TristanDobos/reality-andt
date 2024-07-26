@@ -1,11 +1,15 @@
-import { ContactInfoSchema } from './schemas/contactInfo';
 import { AvailabilityState, ListingSchema } from './schemas/listing';
+
+import { ContactInfoSchema } from './schemas/contactInfo';
 import cors from "cors";
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+
+const sharp = require('sharp');
+
 var multer = require('multer');
-var upload = multer();
+var upload = multer({ storage: multer.memoryStorage() });
 
 const { Storage } = require('@google-cloud/storage');
 
@@ -350,6 +354,40 @@ router.get('/listings/:id', async (req: any, res: any) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+app.post('/upload-picture', upload.single('image'), async (req: any, res) => {
+  try {
+    const { buffer } = req.file;
+    const da = Date.now();
+
+    console.log("the name is ", req.file);
+    const hdFileName = `hd-${da}-${req.file.originalname}`;
+    const thumbnailFileName = `thumb-${da}-${req.file.originalname}`;
+
+    const bucketName = 'reality-aandt';
+    const bucket = storage.bucket(bucketName);
+      
+    // Upload HD image
+    const hdFile = bucket.file(hdFileName);
+    await hdFile.save(buffer);
+
+    // Create and upload thumbnail
+    const thumbnailBuffer = await sharp(buffer)
+      .resize({ width: 150 })
+      .toBuffer();
+    const thumbnailFile = bucket.file(thumbnailFileName);
+    await thumbnailFile.save(thumbnailBuffer);
+
+    console.log("the hd file is ", hdFileName);
+    console.log("thumbnail file name is: ", thumbnailFileName)
+
+    res.status(200).send('Files uploaded successfully');
+  } catch (error) {
+    res.status(500).send('Error uploading files');
+  }
+});
+
 
 export default router;
 
