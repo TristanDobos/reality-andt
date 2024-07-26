@@ -355,12 +355,27 @@ router.get('/listings/:id', async (req: any, res: any) => {
   }
 });
 
-router.get('/upload-picture',async (req, res) => {
+router.get('/upload-picture',async (req: any, res) => {
   res.status(200).send({
     'message': "This work"
   })
   
 })
+
+// // Create Listing
+// router.post('/listings', async (req, res) => {
+//   const Listing = mongoose.model("Listing", ListingSchema);
+
+//   const newListing = new Listing(req.body);
+
+//   try {
+//     await newListing.save();
+//     res.json(newListing);
+//   } catch (err) {
+//     res.status(400).json(err);
+//   }
+
+// });
 
 router.post('/upload-picture', upload.single('image'), async (req: any, res) => {
   try {
