@@ -186,6 +186,48 @@ app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ limit: '500mb', extended: true }));
 //form-urlencoded
 
+router.get('/uploadpicture',async (_: any, res) => {
+  res.json({
+    'message': "This work"
+  })
+  
+})
+
+
+router.post('/uploadpicture', upload.single('image'), async (req: any, res) => {
+  try {
+    console.log("Uploading a picture");
+    const { buffer } = req.file;
+    const da = Date.now();
+
+    console.log("the name is ", req.file);
+    const hdFileName = `hd-${da}-${req.file.originalname}`;
+    const thumbnailFileName = `thumb-${da}-${req.file.originalname}`;
+
+    const bucketName = 'reality-aandt';
+    const bucket = storage.bucket(bucketName);
+      
+    // Upload HD image
+    const hdFile = bucket.file(hdFileName);
+    await hdFile.save(buffer);
+
+    // Create and upload thumbnail
+    const thumbnailBuffer = await sharp(buffer)
+      .resize({ width: 150 })
+      .toBuffer();
+    const thumbnailFile = bucket.file(thumbnailFileName);
+    await thumbnailFile.save(thumbnailBuffer);
+
+    console.log("the hd file is ", hdFileName);
+    console.log("thumbnail file name is: ", thumbnailFileName)
+
+    res.status(200).send('Files uploaded successfully');
+  } catch (error) {
+    res.status(500).send('Error uploading files');
+  }
+});
+
+
 // @ts-ignore
 router.get('/contact-infos', async (req, res) => {
   const ContactInfo = mongoose.model("ContactInfo", ContactInfoSchema);
@@ -237,15 +279,14 @@ router.put('/listings/:id', async (req, res) => {
 
 // @ts-ignore
 router.get('/admin/listings', async (req, res) => {
-  const Listing = mongoose.model("Listing", ListingSchema);
+  // const Listing = mongoose.model("Listing", ListingSchema);
 
-  const listings = await Listing.find({}).exec();
+  // const listings = await Listing.find({}).exec();
 
-  res.json(listings);
+  res.json({asdsa: "hello"});
 });
 
 
-app.use(express.static('public'));
 
 router.get('/properties', async (req: any, res: any) => {
   const ListingModel = mongoose.model("Listing", ListingSchema);
@@ -355,60 +396,9 @@ router.get('/listings/:id', async (req: any, res: any) => {
   }
 });
 
-router.get('/upload-picture',async (req: any, res) => {
-  res.status(200).send({
-    'message': "This work"
-  })
-  
-})
 
-// // Create Listing
-// router.post('/listings', async (req, res) => {
-//   const Listing = mongoose.model("Listing", ListingSchema);
 
-//   const newListing = new Listing(req.body);
-
-//   try {
-//     await newListing.save();
-//     res.json(newListing);
-//   } catch (err) {
-//     res.status(400).json(err);
-//   }
-
-// });
-
-router.post('/upload-picture', upload.single('image'), async (req: any, res) => {
-  try {
-    console.log("Uploading a picture");
-    const { buffer } = req.file;
-    const da = Date.now();
-
-    console.log("the name is ", req.file);
-    const hdFileName = `hd-${da}-${req.file.originalname}`;
-    const thumbnailFileName = `thumb-${da}-${req.file.originalname}`;
-
-    const bucketName = 'reality-aandt';
-    const bucket = storage.bucket(bucketName);
-      
-    // Upload HD image
-    const hdFile = bucket.file(hdFileName);
-    await hdFile.save(buffer);
-
-    // Create and upload thumbnail
-    const thumbnailBuffer = await sharp(buffer)
-      .resize({ width: 150 })
-      .toBuffer();
-    const thumbnailFile = bucket.file(thumbnailFileName);
-    await thumbnailFile.save(thumbnailBuffer);
-
-    console.log("the hd file is ", hdFileName);
-    console.log("thumbnail file name is: ", thumbnailFileName)
-
-    res.status(200).send('Files uploaded successfully');
-  } catch (error) {
-    res.status(500).send('Error uploading files');
-  }
-});
+app.use(express.static('public'));
 
 
 export default router;
