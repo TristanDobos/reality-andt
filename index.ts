@@ -36,6 +36,8 @@ const storage = new Storage({
   credentials: process.env.GOOGLE_KEY
 });
 
+console.log("the env is: ", process.env.GOOGLE_KEY);
+
 //For env File 
 dotenv.config();
 

@@ -29,6 +29,7 @@ const storage = new Storage({
     projectId: "reality-at",
     credentials: process.env.GOOGLE_KEY
 });
+console.log("the env is: ", process.env.GOOGLE_KEY);
 dotenv_1.default.config();
 const router = express_1.default.Router();
 const app = (0, express_1.default)();
