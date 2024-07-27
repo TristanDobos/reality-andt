@@ -25,12 +25,13 @@ async function createThumbnail(buffer) {
 var multer = require('multer');
 var upload = multer({ storage: multer.memoryStorage() });
 const { Storage } = require('@google-cloud/storage');
+const googleenv = JSON.parse(process.env.GOOGLE_KEY);
 const storage = new Storage({
     projectId: "reality-at",
-    credentials: process.env.GOOGLE_KEY
+    credentials: googleenv
 });
-console.log("the env is: ", process.env.GOOGLE_KEY);
-console.log("client_email field is: ", process.env.GOOGLE_KEY['client_email']);
+console.log("the env is: ", googleenv);
+console.log("client_email field is: ", googleenv['client_email']);
 dotenv_1.default.config();
 const router = express_1.default.Router();
 const app = (0, express_1.default)();

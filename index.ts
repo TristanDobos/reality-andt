@@ -31,14 +31,17 @@ var upload = multer({ storage: multer.memoryStorage() });
 
 const { Storage } = require('@google-cloud/storage');
 
+// @ts-ignore
+const googleenv = JSON.parse(process.env.GOOGLE_KEY);
+
 const storage = new Storage({
   projectId: "reality-at",
-  credentials: process.env.GOOGLE_KEY
+  credentials: googleenv
 });
 
-console.log("the env is: ", process.env.GOOGLE_KEY);
+console.log("the env is: ", googleenv);
 // @ts-ignore
-console.log("client_email field is: ", process.env.GOOGLE_KEY['client_email'])
+console.log("client_email field is: ", googleenv['client_email'])
 
 //For env File 
 dotenv.config();
