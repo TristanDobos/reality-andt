@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 
-// const sharp = require("sharp");
+const sharp = require("sharp");
 
 var multer = require('multer');
 var upload = multer({ storage: multer.memoryStorage() });
@@ -202,7 +202,7 @@ router.post('/uploadpicture', upload.single('image'), async (req: any, res) => {
 
     console.log("the name is ", req.file);
     const hdFileName = `hd-${da}-${req.file.originalname}`;
-    // const thumbnailFileName = `thumb-${da}-${req.file.originalname}`;
+    const thumbnailFileName = `thumb-${da}-${req.file.originalname}`;
 
     const bucketName = 'reality-aandt';
     const bucket = storage.bucket(bucketName);
@@ -212,14 +212,14 @@ router.post('/uploadpicture', upload.single('image'), async (req: any, res) => {
     await hdFile.save(buffer);
 
     // Create and upload thumbnail
-    // const thumbnailBuffer = await sharp(buffer)
-    //   .resize({ width: 150 })
-    //   .toBuffer();
-    // const thumbnailFile = bucket.file(thumbnailFileName);
-    // await thumbnailFile.save(thumbnailBuffer);
+    const thumbnailBuffer = await sharp(buffer)
+      .resize({ width: 150 })
+      .toBuffer();
+    const thumbnailFile = bucket.file(thumbnailFileName);
+    await thumbnailFile.save(thumbnailBuffer);
 
     console.log("the hd file is ", hdFileName);
-    // console.log("thumbnail file name is: ", thumbnailFileName)
+    console.log("thumbnail file name is: ", thumbnailFileName)
 
     res.status(200).send('Files uploaded successfully');
   } catch (error) {

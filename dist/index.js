@@ -9,6 +9,7 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const sharp = require("sharp");
 var multer = require('multer');
 var upload = multer({ storage: multer.memoryStorage() });
 const { Storage } = require('@google-cloud/storage');
@@ -52,11 +53,18 @@ router.post('/uploadpicture', upload.single('image'), async (req, res) => {
         const da = Date.now();
         console.log("the name is ", req.file);
         const hdFileName = `hd-${da}-${req.file.originalname}`;
+        const thumbnailFileName = `thumb-${da}-${req.file.originalname}`;
         const bucketName = 'reality-aandt';
         const bucket = storage.bucket(bucketName);
         const hdFile = bucket.file(hdFileName);
         await hdFile.save(buffer);
+        const thumbnailBuffer = await sharp(buffer)
+            .resize({ width: 150 })
+            .toBuffer();
+        const thumbnailFile = bucket.file(thumbnailFileName);
+        await thumbnailFile.save(thumbnailBuffer);
         console.log("the hd file is ", hdFileName);
+        console.log("thumbnail file name is: ", thumbnailFileName);
         res.status(200).send('Files uploaded successfully');
     }
     catch (error) {
@@ -98,7 +106,9 @@ router.put('/listings/:id', async (req, res) => {
     }
 });
 router.get('/admin/listings', async (req, res) => {
-    res.json({ asdsa: "hello" });
+    const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);
+    const listings = await Listing.find({}).exec();
+    res.json(listings);
 });
 router.get('/properties', async (req, res) => {
     const ListingModel = mongoose_1.default.model("Listing", listing_1.ListingSchema);
