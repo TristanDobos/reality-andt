@@ -6,7 +6,25 @@ import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 
-const sharp = require("sharp");
+const Jimp = require('jimp');
+
+async function createThumbnail(buffer: Buffer) {
+  try {
+    // Load the image from the buffer
+    const image = await Jimp.read(buffer);
+
+    // Resize the image
+    image.resize(150, Jimp.AUTO);
+
+    // Get the resized image as a buffer
+    const thumbnailBuffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+
+    return thumbnailBuffer;
+  } catch (err) {
+    console.error('Error creating thumbnail:', err);
+    throw err;
+  }
+}
 
 var multer = require('multer');
 var upload = multer({ storage: multer.memoryStorage() });
@@ -212,9 +230,8 @@ router.post('/uploadpicture', upload.single('image'), async (req: any, res) => {
     await hdFile.save(buffer);
 
     // Create and upload thumbnail
-    const thumbnailBuffer = await sharp(buffer)
-      .resize({ width: 150 })
-      .toBuffer();
+    const thumbnailBuffer = await createThumbnail(buffer);
+    
     const thumbnailFile = bucket.file(thumbnailFileName);
     await thumbnailFile.save(thumbnailBuffer);
 

@@ -9,7 +9,19 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const sharp = require("sharp");
+const Jimp = require('jimp');
+async function createThumbnail(buffer) {
+    try {
+        const image = await Jimp.read(buffer);
+        image.resize(150, Jimp.AUTO);
+        const thumbnailBuffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+        return thumbnailBuffer;
+    }
+    catch (err) {
+        console.error('Error creating thumbnail:', err);
+        throw err;
+    }
+}
 var multer = require('multer');
 var upload = multer({ storage: multer.memoryStorage() });
 const { Storage } = require('@google-cloud/storage');
@@ -58,9 +70,7 @@ router.post('/uploadpicture', upload.single('image'), async (req, res) => {
         const bucket = storage.bucket(bucketName);
         const hdFile = bucket.file(hdFileName);
         await hdFile.save(buffer);
-        const thumbnailBuffer = await sharp(buffer)
-            .resize({ width: 150 })
-            .toBuffer();
+        const thumbnailBuffer = await createThumbnail(buffer);
         const thumbnailFile = bucket.file(thumbnailFileName);
         await thumbnailFile.save(thumbnailBuffer);
         console.log("the hd file is ", hdFileName);
