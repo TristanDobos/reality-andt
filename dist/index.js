@@ -30,6 +30,7 @@ const storage = new Storage({
     credentials: process.env.GOOGLE_KEY
 });
 console.log("the env is: ", process.env.GOOGLE_KEY);
+console.log("client_email field is: ", process.env.GOOGLE_KEY['client_email']);
 dotenv_1.default.config();
 const router = express_1.default.Router();
 const app = (0, express_1.default)();

@@ -37,6 +37,8 @@ const storage = new Storage({
 });
 
 console.log("the env is: ", process.env.GOOGLE_KEY);
+// @ts-ignore
+console.log("client_email field is: ", process.env.GOOGLE_KEY['client_email'])
 
 //For env File 
 dotenv.config();
