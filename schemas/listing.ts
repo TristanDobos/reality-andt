@@ -23,6 +23,7 @@ export const PropertyType = {
   HOTEL: "hotel"
 }
 
+
 export const ListingSchema = new mongoose.Schema({
   title: {
     type: String,
