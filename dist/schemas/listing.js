@@ -19,6 +19,8 @@ exports.PropertyType = {
     GARDEN_HOUSE: "garden_house",
     BUILDING: "building",
     VILLA: "villa",
+    APARTMENT: "apartment",
+    HOTEL: "hotel"
 };
 exports.ListingSchema = new mongoose.Schema({
     title: {

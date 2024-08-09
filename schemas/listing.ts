@@ -19,6 +19,8 @@ export const PropertyType = {
   GARDEN_HOUSE: "garden_house",
   BUILDING: "building",
   VILLA: "villa",
+  APARTMENT: "apartment",
+  HOTEL: "hotel"
 }
 
 export const ListingSchema = new mongoose.Schema({
