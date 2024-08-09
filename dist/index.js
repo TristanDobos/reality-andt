@@ -9,7 +9,10 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const axios = require('axios');
 const Jimp = require('jimp');
+const app = (0, express_1.default)();
+const port = process.env.PORT || 9000;
 async function createThumbnail(buffer) {
     try {
         const image = await Jimp.read(buffer);
@@ -34,8 +37,6 @@ console.log("the env is: ", googleenv);
 console.log("client_email field is: ", googleenv['client_email']);
 dotenv_1.default.config();
 const router = express_1.default.Router();
-const app = (0, express_1.default)();
-const port = process.env.PORT || 8000;
 const uri = process.env.MONGO_URL;
 router.get('/', async (req, res) => {
     const user = {
@@ -86,7 +87,7 @@ router.post('/uploadpicture', upload.single('image'), async (req, res) => {
     }
 });
 router.get('/contact-infos', async (req, res) => {
-    const ContactInfo = mongoose_1.default.model("ContactInfo", contactInfo_1.ContactInfoSchema);
+    const ContactInfo = mongoose_1.default.model("ContactInfo", contactInfo_1.contactInfoSchema);
     const contactInfos = await ContactInfo.find({});
     res.json(contactInfos);
 });
@@ -100,6 +101,42 @@ router.post('/listings', async (req, res) => {
     catch (err) {
         res.status(400).json(err);
     }
+});
+router.post('/contact-form', async (req, res) => {
+    let contactInfo = req.body;
+    const listingId = contactInfo.listingId;
+    const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);
+    const listing = await Listing.findById(listingId);
+    contactInfo = Object.assign(Object.assign({}, contactInfo), { ownerNumber: listing.owner.phone, ownerName: listing.owner.name });
+    const { CLIENT_ID, CLIENT_SECRET } = process.env;
+    const getAccessToken = async () => {
+        const token = await axios.post("https://app.gosms.eu/oauth/v2/token", "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET + "&grant_type=client_credentials");
+        return token;
+    };
+    const sendMessage = async ({ title, ownerName, ownerNumber, note, name, phoneNumber, email }) => {
+        const { data: { access_token } } = await getAccessToken();
+        console.log("the token is ", access_token);
+        const result = await axios.post("https://app.gosms.eu/api/v1/messages?access_token=" + access_token, {
+            "message": `${title}
+https://realityaandt.com/properties/${listingId}
+Tulaj: ${ownerName}, ${ownerNumber}
+Uzenet: ${note}
+Info:
+${name}
+${phoneNumber}
+${email}
+            `,
+            "recipients": ["+421940718402"],
+            "channel": 404294,
+        });
+        console.log("the result is ", result);
+        return result;
+    };
+    sendMessage(Object.assign(Object.assign({}, listing), contactInfo));
+    const ContactInfo = mongoose_1.default.model('ContactInfo', contactInfo_1.contactInfoSchema);
+    const contact = new ContactInfo(Object.assign(Object.assign({}, contactInfo), { _id: undefined }));
+    contact.save();
+    res.json({ "message": "Success" });
 });
 router.get('/listings', async (req, res) => {
     const Listing = mongoose_1.default.model("Listing", listing_1.ListingSchema);

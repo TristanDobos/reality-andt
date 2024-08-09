@@ -1,12 +1,21 @@
 import { AvailabilityState, ListingSchema } from './schemas/listing';
 
-import { ContactInfoSchema } from './schemas/contactInfo';
+import { contactInfoSchema } from './schemas/contactInfo';
 import cors from "cors";
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+// @ts-ignore
+import path from 'path';
+
+// @ts-ignore
+// import { sendMessage } from 'sendSMSnotification';
+const axios = require('axios');
 
 const Jimp = require('jimp');
+
+const app = express();
+const port = process.env.PORT || 9000;
 
 async function createThumbnail(buffer: Buffer) {
   try {
@@ -49,75 +58,6 @@ dotenv.config();
 const router = express.Router();
 
 
-// const authorSchema = new Schema({
-//   name: String,
-//   stories: [{ type: Schema.Types.ObjectId, ref: "Story" }],
-// });
-
-// const Author = mongoose.model("Author", authorSchema);
-// const bob = new Author({ name: "Bob Smith" });
-
-// await bob.save();
-
-// // Bob now exists, so lets create a story
-// const story = new Story({
-//   title: "Bob goes sledding",
-//   author: bob._id, // assign the _id from our author Bob. This ID is created by default!
-// });
-
-// await story.save();
-
-const app = express();
-const port = process.env.PORT || 8000;
-
-// const seedRealEstates = [
-//   {
-//     title: "Modern Apartment in New York",
-//     description: "A stunning modern apartment with a panoramic city view, fully furnished.",
-//     price: 1200000,
-//     location: {
-//       city: "New York",
-//       state: "NY",
-//       country: "USA",
-//       zipCode: "10001",
-//       address: "1234 Broadway Ave"
-//     },
-//     propertyType: "Apartment",
-//     bedrooms: 2,
-//     bathrooms: 2,
-//     squareFeet: 900,
-//     amenities: ["Pool", "Gym", "24h Security"],
-//     photos: ["image1.jpg", "image2.jpg"],
-//     contactInfo: {
-//       name: "John Doe",
-//       phone: "123-456-7890",
-//       email: "johndoe@example.com"
-//     }
-//   },
-//   {
-//     title: "Luxury House in Miami",
-//     description: "A beautiful house with 4 bedrooms, a pool and a gym.",
-//     price: 2500000,
-//     location: {
-//       city: "Miami",
-//       state: "FL",
-//       country: "USA",
-//       zipCode: "33101",
-//       address: "1234 Lincoln Rd"
-//     },
-//     propertyType: "House",
-//     bedrooms: 4,
-//     bathrooms: 5,
-//     squareFeet: 3000,
-//     amenities: ["Pool", "Gym", "24h Security"],
-//     photos: ["image1.jpg", "image2.jpg"],
-//     contactInfo: {
-//       name: "John Doe",
-//       phone: "123-456-7890",
-//       email: "johndoe@example.com"
-//     }
-//   }
-// ];
 
 const uri = process.env.MONGO_URL;
 
@@ -142,80 +82,16 @@ mongoose.connection.on('error', err => {
   console.error(err);
 });
 
-// // Contact Infos
-// const Listing = mongoose.model("Listing", ListingSchema);
-// const newListing = new Listing( {
-//   title: "Cozy Apartment in Downtown",
-//   description: "This charming apartment boasts a prime location in the heart of downtown. Featuring a spacious living area, modern kitchen, and comfortable bedroom, it's perfect for urban living.",
-//   price: 1500,
-//   location: {
-//     city: "New York City",
-//     state: "New York",
-//     country: "United States",
-//     zipCode: "10001",
-//     address: "123 Main Street, Apt 2A"
-//   },
-//   propertyType: "Apartment",
-//   bedrooms: 1,
-//   bathrooms: 1,
-//   squareFeet: 800,
-//   amenities: [
-//     "Central Heating",
-//     "High-Speed Internet",
-//     "Laundry Facilities"
-//   ],
-//   photos: ["photo1.jpg", "photo2.jpg"],
-//   listedDate: new Date(),
-//   contactInfo: {
-//     name: "John Doe",
-//     phone: "(555) 123-4567",
-//     email: "john.doe@example.com"
-//   },
-//   isAvailable: true
-// })
-// newListing.save();
-
-// const newListing2 = new Listing({
-//   title: "Luxury Villa with Ocean View",
-//   description: "Experience luxury living in this stunning villa overlooking the ocean. With elegant interiors, spacious rooms, and breathtaking views, it offers a serene retreat for those seeking tranquility.",
-//   price: 5000,
-//   location: {
-//     city: "Malibu",
-//     state: "California",
-//     country: "United States",
-//     zipCode: "90265",
-//     address: "456 Ocean Drive"
-//   },
-//   propertyType: "Villa",
-//   bedrooms: 4,
-//   bathrooms: 3.5,
-//   squareFeet: 4000,
-//   amenities: [
-//     "Infinity Pool",
-//     "Private Beach Access",
-//     "Gourmet Kitchen",
-//     "Home Theater"
-//   ],
-//   photos: ["photo3.jpg", "photo4.jpg"],
-//   listedDate: new Date(),
-//   contactInfo: {
-//     name: "Jane Smith",
-//     phone: "(555) 987-6543",
-//     email: "jane.smith@example.com"
-//   },
-//   isAvailable: true
-// })
-// newListing2.save();
 
 app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ limit: '500mb', extended: true }));
 //form-urlencoded
 
-router.get('/uploadpicture',async (_: any, res) => {
+router.get('/uploadpicture', async (_: any, res) => {
   res.json({
     'message': "This work"
   })
-  
+
 })
 
 
@@ -231,14 +107,14 @@ router.post('/uploadpicture', upload.single('image'), async (req: any, res) => {
 
     const bucketName = 'reality-aandt';
     const bucket = storage.bucket(bucketName);
-      
+
     // Upload HD image
     const hdFile = bucket.file(hdFileName);
     await hdFile.save(buffer);
 
     // Create and upload thumbnail
     const thumbnailBuffer = await createThumbnail(buffer);
-    
+
     const thumbnailFile = bucket.file(thumbnailFileName);
     await thumbnailFile.save(thumbnailBuffer);
 
@@ -256,12 +132,13 @@ router.post('/uploadpicture', upload.single('image'), async (req: any, res) => {
 
 // @ts-ignore
 router.get('/contact-infos', async (req, res) => {
-  const ContactInfo = mongoose.model("ContactInfo", ContactInfoSchema);
+  const ContactInfo = mongoose.model("ContactInfo", contactInfoSchema);
 
   const contactInfos = await ContactInfo.find({});
 
   res.json(contactInfos);
 });
+
 
 // Create Listing
 router.post('/listings', async (req, res) => {
@@ -277,6 +154,72 @@ router.post('/listings', async (req, res) => {
   }
 
 });
+
+router.post('/contact-form', async (req, res) => {
+  let contactInfo = req.body;
+  
+  const listingId = contactInfo.listingId;
+
+  const Listing = mongoose.model("Listing", ListingSchema);
+
+  const listing = await Listing.findById(listingId);
+
+  contactInfo = {...contactInfo, ownerNumber: listing.owner.phone, ownerName: listing.owner.name }
+
+  const { CLIENT_ID, CLIENT_SECRET } = process.env;
+  
+  const getAccessToken = async () => {
+    const token = await axios.post("https://app.gosms.eu/oauth/v2/token",
+      "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET + "&grant_type=client_credentials"
+    );
+    return token;
+  }
+
+  const sendMessage = async ({ title, ownerName, ownerNumber, note, name, phoneNumber, email }: any) => {
+
+    const { data: { access_token } } = await getAccessToken();
+
+    console.log("the token is ", access_token);
+
+    const result = await axios.post(
+      "https://app.gosms.eu/api/v1/messages?access_token=" + access_token,
+      {
+        "message": `${title}
+https://realityaandt.com/properties/${listingId}
+Tulaj: ${ownerName}, ${ownerNumber}
+Uzenet: ${note}
+Info:
+${name}
+${phoneNumber}
+${email}
+            `,
+        "recipients": ["+421940718402"],
+        "channel": 404294,
+      }
+    );
+
+    // TODO: save everything to the DB + IP address + timestamp
+
+    console.log("the result is ", result);
+
+    return result;
+  }
+
+ sendMessage({ ...listing, ...contactInfo});
+ const ContactInfo = mongoose.model('ContactInfo', contactInfoSchema);
+
+ //@ts-ignore
+  const contact = new ContactInfo({
+    ...contactInfo,
+    _id: undefined,
+   
+    });
+
+    // Save the contact information to the database
+   contact.save();
+
+  res.json({ "message": "Success" });
+})
 
 // Get Listings
 // @ts-ignore
@@ -439,3 +382,107 @@ app.use('/', router);
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);
 });
+
+/*
+
+
+// scripts
+// 1. Find all the listings that have photos but not have thumbnail-photos
+
+
+const Listing = mongoose.model("Listing", ListingSchema);
+const bucketName = 'reality-aandt';
+const bucket = storage.bucket(bucketName);
+
+
+async function uploadToGCS(filePath: any, destFileName: any) {
+
+  const file = bucket.file(destFileName);
+
+  // Check if the file exists in the bucket
+  const [exists] = await file.exists();
+
+  if (exists) {
+    console.log(`File ${destFileName} already exists in the bucket.`);
+  } else {
+    // Upload the file if it does not exist
+    await bucket.upload(filePath, {
+      destination: destFileName,
+     metadata: {
+        cacheControl: 'public, max-age=31536000'
+    } 
+    });
+    console.log(`File ${filePath} uploaded to ${bucketName} as ${destFileName}.`);
+  }
+
+  // await bucket.upload(filePath, {
+  //     destination: destFileName,
+  //     // public: true // Make the file publicly accessible
+  //     metadata: {
+  //      cacheControl: 'public, max-age=31536000'
+  //  } 
+  // })
+  console.log(`${filePath} uploaded to ${bucketName} as ${destFileName}`)
+}
+
+// Function to create an HD version of an image
+async function createHdVersion(imageUrl: string, destFileName: string) {
+  try {
+    // Load the image
+    const image = await Jimp.read(imageUrl)
+
+    const file = bucket.file(destFileName);
+
+    // Check if the file exists in the bucket
+    const [exists] = await file.exists();
+    if (!exists) {
+      // Process the image (resize, enhance, etc.)
+      // For HD version, we might simply increase the quality, resolution, etc.
+      image.resize(Jimp.AUTO, 720) // Resize the image height to 1080px, keeping aspect ratio
+      const tempFilePath = path.join(__dirname, "temp", destFileName)
+
+      // Save the processed image locally
+      await image.writeAsync(tempFilePath)
+
+      // Upload to Google Cloud Storage
+      await uploadToGCS(tempFilePath, destFileName)
+    }
+  } catch (error) {
+    console.error("Error processing the image:", error)
+  }
+}
+
+async function findListings() {
+  try {
+    // Query to find listings with a photo attribute but without previews
+    const listings = await Listing.find({
+      photos: { $exists: true },
+      previews: { $exists: false },
+    }).select('_id photos').exec();
+
+    console.log("listings", listings);
+
+
+    listings.forEach(listing => {
+         listing.photos.forEach((photo: string) => {
+      // https://storage.googleapis.com/reality-aandt/IMG_2119_20240218_210747.jpg
+      const fileName = "previews/" + photo.split("/")[photo.split("/").length - 1]
+      console.log("file name is", fileName);
+      createHdVersion(photo, fileName);
+    });
+
+    })
+    // const firstListing = listings[0];
+ 
+    // listings.forEach(({_id, photos}) => {
+
+    //   photos.forEach(photo => {
+
+    //   });
+    // });
+  } catch (error) {
+    console.error("Error finding listings:", error);
+  }
+}
+
+findListings(); */

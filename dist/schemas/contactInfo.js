@@ -1,13 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ContactInfoSchema = void 0;
+exports.contactInfoSchema = void 0;
 const mongoose = require('mongoose');
-exports.ContactInfoSchema = new mongoose.Schema({
+exports.contactInfoSchema = new mongoose.Schema({
+    ownerName: {
+        type: String,
+        required: true
+    },
+    ownerNumber: {
+        type: String,
+        required: true
+    },
+    note: {
+        type: String,
+        default: ''
+    },
     name: {
         type: String,
         required: true
     },
-    phone: {
+    phoneNumber: {
         type: String,
         required: true
     },
@@ -15,5 +27,10 @@ exports.ContactInfoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    listingId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Listing'
+    }
 });
 //# sourceMappingURL=contactInfo.js.map
