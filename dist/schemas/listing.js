@@ -64,6 +64,11 @@ exports.ListingSchema = new mongoose.Schema({
         type: String,
         enum: Object.values(exports.AvailabilityState),
         default: exports.AvailabilityState.AVAILABLE
-    }
+    },
+    hasPreviews: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
 });
 //# sourceMappingURL=listing.js.map

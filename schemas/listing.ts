@@ -67,7 +67,12 @@ export const ListingSchema = new mongoose.Schema({
     type: String,
     enum: Object.values(AvailabilityState),
     default: AvailabilityState.AVAILABLE
-  }
+  },
+  hasPreviews: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
 });
 
 
