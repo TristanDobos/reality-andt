@@ -193,7 +193,7 @@ ${name}
 ${phoneNumber}
 ${email}
             `,
-        "recipients": ["+421940718402"],
+        "recipients": ["+421940718402", "+421905738632"],
         "channel": 404294,
       }
     );
